@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+//orginal square class that has now become a shortened function below
 // class Square extends React.Component {
 
 //   //we want the square component to remember that it got clicked
@@ -31,6 +32,8 @@ import './index.css';
 //   }
 // }
 
+//when you click a square, it gets filled with something
+//seee handleclick for more info
 function Square(props)
 {
   return(
@@ -55,10 +58,18 @@ class Board extends React.Component {
     };
   }
 
-  //xIsNext is a boolean that gets flipped between x and o 
+  //when a square is clicked, 
+  //flip between showing an X or O
+  //unless a player has won
   handleClick(i)
   {
+    //we used slice to make the square array immutable
+    //this created a new copy of squares array
+    //after every move
     const squares = this.state.squares.slice();
+    if (calculateWinner(squares) || squares[i]){
+      return;
+    }
     squares[i] = this.state.XisNext ? 'X' : 'O';
     this.setState
     ({
@@ -80,7 +91,18 @@ class Board extends React.Component {
   }
 
   render() {
-    const status = 'Next player: X';
+    //change the status rext in the board's render so that it
+    //displays which player has the next turn
+    //const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+
+    //check if a player has won and display who won
+    const winner = calculateWinner(this.state.squares);
+    let status;
+    if(winner){
+      status = 'Winner: ' + winner;
+    } else {
+      status = 'Next player: ' + (this.state.XisNext ? 'X' : 'O');
+    }
 
     return (
       <div>
@@ -120,6 +142,37 @@ class Game extends React.Component {
     );
   }
 }
+
+//declare a winner
+//given an array of 9 squares, this function will
+//check for a winner and return 'X', 'O', or null
+function calculateWinner(squares)
+{
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  for (let i = 0; i < lines.length; i++){
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]){
+      return squares[a];
+    }
+  }
+  return null;
+}
+
+
+
+
+
+
+
 
 // ========================================
 
